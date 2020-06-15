@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<form method="Post" action="{{url_for('count_device_types')}}">
+<form method="Post" action="{{ url_for('count_device_types') }}">
 
     {{ form.sites }}
     {{ form.button }}

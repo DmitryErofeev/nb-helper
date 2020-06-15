@@ -3,7 +3,7 @@
 {% block content_title %}
 <p>
     <h2>
-        Выберите модель:
+        Выберите VLAN:
     </h2>
 
 </p>
@@ -12,10 +12,16 @@
 
 {% block content %}
 
-<form method="Post" action="{{ url_for('count_vlan') }}">
-
-    {{ form.types }}
+<form method="Post" action="">
+    Регион:
+    {{ form.region }}
+    Сайт:
     {{ form.site }}
+    Модель:
+    {{ form.device_type }}
+
+
+
     {{ form.button }}
 
 </form>

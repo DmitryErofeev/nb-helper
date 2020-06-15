@@ -30,6 +30,14 @@ class DeviceTypeForm(FlaskForm):
     button = SubmitField('Next step')
 
 
+class VlanForm(FlaskForm):
+    device_type = StringField()
+    site = StringField()
+    region = StringField()
+    vlan = SelectField('Список', choices=[])
+    button = SubmitField('Add device')
+
+
 @app.route('/step1', methods=['GET'])
 def count_regions():
     form = RegionForm()
@@ -62,9 +70,27 @@ def count_device_types():
         form = DeviceTypeForm()
         form.site.data = site
         device_types = nb.dcim.device_types.all()
-        form.types.choices = [(device_type.manufacturer.slug, ': '.join([str(device_type.model)]))  for device_type in device_types]
+        form.types.choices = [(device_type.slug, ': '.join([str(device_type.manufacturer), str(device_type.model)]))  for device_type in device_types]
 
     return render_template('step3.html', form=form)
+
+
+@app.route('/step4', methods=['POST'])
+def count_vlan():
+    if request.method == 'POST':
+        form = VlanForm()
+
+        model = request.form.get('types')
+        site = request.form.get('site')
+        _site = nb.dcim.sites.get(slug=site)
+        region = nb.dcim.regions.get(_site.region.id)
+
+        form.device_type.data = model
+        form.site.data = site
+        form.region.data = region
+
+    return render_template('step4.html',form=form)
+
 
 
 if __name__ == '__main__':

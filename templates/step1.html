@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<form method="Post" action="{{url_for('count_sites')}}">
+<form method="Post" action="{{ url_for('count_sites') }}">
 
     {{form.regions}}
     {{ form.button }}
