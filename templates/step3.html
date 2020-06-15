@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content_title %}
+<p>
+    <h2>
+        Выберите модель:
+    </h2>
+
+</p>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="Post" action="">
+
+    {{ form.types }}
+    {{ form.site }}
+    {{ form.button }}
+
+</form>
+
+{% endblock %}

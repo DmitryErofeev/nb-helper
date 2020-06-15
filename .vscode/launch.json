@@ -8,8 +8,18 @@
             "name": "Python: Текущий файл",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal"
+            "module": "flask",
+            "console": "integratedTerminal",
+            "env": {
+                "FLASK_APP": "main.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "1"
+            },
+            "args": [
+                "run",
+                // "--no-debugger",
+                // "--no-reload"
+            ]
         }
     ]
 }

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content_title %}
+<p>
+    <h2>
+        Выберите регион:
+    </h2>
+
+</p>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="Post" action="{{url_for('count_sites')}}">
+
+    {{form.regions}}
+    {{ form.button }}
+
+</form>
+{% endblock %}

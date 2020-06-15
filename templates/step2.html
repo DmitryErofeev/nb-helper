@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content_title %}
+<p>
+    <h2>
+        Выберите сайт:
+    </h2>
+
+</p>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="Post" action="{{url_for('count_device_types')}}">
+
+    {{ form.sites }}
+    {{ form.button }}
+
+</form>
+{% endblock %}
