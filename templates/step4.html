@@ -12,17 +12,31 @@
 
 {% block content %}
 
-<form method="Post" action="">
+<form method="Post" action="{{ url_for('count_ip') }}">
+
+<br>
     Регион:
     {{ form.region }}
+</br>
+
+<br>
     Сайт:
     {{ form.site }}
+</br>
+
+<br>
     Модель:
     {{ form.device_type }}
+</br>
 
+<br>
+    Vlan:
+    {{ form.vlan }}
+</br>
 
-
+<br>
     {{ form.button }}
+</br>
 
 </form>
 

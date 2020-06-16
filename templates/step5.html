@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content_title %}
+<p>
+    <h2>
+        Выберите свободный IP:
+    </h2>
+
+</p>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="Post" action="">
+    Регион:
+    {{ form.region }}
+    <br>
+    <br>
+    Сайт:
+    {{ form.site }}
+    <br>
+    <br>
+    Модель:
+    {{ form.device_type }}
+    <br>
+    <br>
+    Интерфейс mngmt:
+    {{ form.mngmt_interface }}
+    <br>
+    <br>
+    Vlan:
+    {{ form.vlan }}
+    <br>
+    <br>
+    Ip:
+    {{ form.ip }}
+    <br>
+    <br>
+    Имя добавляемого устройства:
+    {{ form.name_device }}
+    <br>
+    <br>
+    {{ form.button }}
+
+</form>
+
+{% endblock %}
