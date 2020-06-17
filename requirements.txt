@@ -1,0 +1,4 @@
+flask
+pynetbox
+flask_wtf
+wtforms

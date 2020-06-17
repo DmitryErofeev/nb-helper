@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<form method="Post" action="">
+<form method="Post" action="{{ url_for('create_device') }}">
     Регион:
     {{ form.region }}
     <br>
@@ -25,8 +25,8 @@
     {{ form.device_type }}
     <br>
     <br>
-    Интерфейс mngmt:
-    {{ form.mngmt_interface }}
+    Интерфейс mgmt:
+    {{ form.mgmt_interface }}
     <br>
     <br>
     Vlan:
@@ -44,5 +44,8 @@
     {{ form.button }}
 
 </form>
+<br>
+<br>
+{{ form.data }}
 
 {% endblock %}

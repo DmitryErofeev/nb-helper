@@ -1,14 +1,15 @@
 from flask import Flask, render_template, url_for, request
-import pynetbox
+import pynetbox, os
 from flask_wtf import FlaskForm
 from wtforms import TextField, StringField, validators, SelectField, TextAreaField, SubmitField, HiddenField
 
 
 app = Flask(__name__)
-app.conﬁg['SECRET_KEY'] = 'hard to guess string'
+app.conﬁg['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'hard to guess string'
 
 nb_url = 'http://10.100.3.128:33080/'
-token = '03319cd840dcea602826b4c1ba3012761ee49466'
+token = os.getenv('NETBOX_TOKEN')
+
 nb = pynetbox.api(nb_url, token)
 
 
@@ -40,7 +41,7 @@ class IpForm(SelectForm):
     region = StringField()
     site = StringField()
     device_type = StringField()
-    mngmt_interface = SelectField('Список', choices=[])
+    mgmt_interface = SelectField('Список', choices=[])
     vlan = StringField()
     ip = SelectField('Список', choices=[])
     name_device = StringField()
@@ -125,12 +126,45 @@ def count_ip():
         form.region.data = region
         form.site.data = site
         form.device_type.data = device_type
-        form.mngmt_interface.choices = [_int for _int in interface]
+        form.mgmt_interface.choices = [_int for _int in interface]
         form.vlan.data = vlan
-        form.ip.choices = [ ip['address'].split('/')[0]  for ip in _list_ip if int(ip['address'].split('/')[0].split('.')[-1]) > 25 ]
+        form.ip.choices = [ ip['address']  for ip in _list_ip if int(ip['address'].split('/')[0].split('.')[-1]) > 25 ]
         form.name_device.data = name_device
 
     return render_template('step5.html', form=form)
+
+
+@app.route('/step6', methods=['POST'])
+def create_device():
+    DEVICE_ROLE = 'access-switch'
+
+    region = request.form.get('region')
+
+    site = request.form.get('site')
+    _site = nb.dcim.sites.get(slug=site)
+
+    device_type = request.form.get('device_type')
+    _device_type = nb.dcim.device_types.get(slug=device_type)
+
+    interface = request.form.get('mgmt_interface')
+    vlan = request.form.get('vlan')
+    ip = request.form.get('ip')
+    name_device = request.form.get('name_device')
+    device_role = nb.dcim.device_roles.get(slug=DEVICE_ROLE)
+
+    device_params = \
+    {
+        'site': _site.id,
+        'device_type': _device_type.id,
+        'name': name_device,
+        'device_role': device_role.id
+    }
+    _device = nb.dcim.devices.create(**device_params)
+    # _device = nb.dcim.devices.get(9080)
+    _interface = nb.dcim.interfaces.get(device_id=_device.id, name=interface)
+    _ip_on_interface = nb.ipam.ip_addresses.create(interface=_interface.id, address=ip)
+    _device.update({'primary_ip4': _ip_on_interface.id})
+    return render_template('step6.html', data={'device': _device.id, 'interface': _interface.id, 'params': device_params})
 
 
 if __name__ == '__main__':

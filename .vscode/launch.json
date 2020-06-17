@@ -11,6 +11,7 @@
             "module": "flask",
             "console": "integratedTerminal",
             "env": {
+                "NETBOX_TOKEN": "03319cd840dcea602826b4c1ba3012761ee49466",
                 "FLASK_APP": "main.py",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "1"
