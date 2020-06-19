@@ -9,7 +9,7 @@ app = Flask(__name__)
 Bootstrap(app)
 app.conﬁg['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'hard to guess string'
 
-nb_url = 'http://10.100.3.128:33080/'
+nb_url = os.getenv('NETBOX_URL')
 token = os.getenv('NETBOX_TOKEN')
 
 nb = pynetbox.api(nb_url, token)
