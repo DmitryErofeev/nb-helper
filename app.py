@@ -15,10 +15,6 @@ token = os.getenv('NETBOX_TOKEN')
 nb = pynetbox.api(nb_url, token)
 
 
-# class SelectForm(FlaskForm):
-#     button = SubmitField('Next step')
-
-
 class RegionForm(FlaskForm):
     regions = SelectField('Регион', choices=[])
     button = SubmitField('Next step')
@@ -64,11 +60,6 @@ def count_regions():
 
 @app.route('/step2', methods=['POST'])
 def count_sites():
-    """
-    pynetbox.core.query.RequestError:
-    The request failed with code 403 Forbidden:
-    {'detail': 'You do not have permission to perform this action.'}
-    """
     if request.method == 'POST':
         region = request.form.get('regions')
         sites = nb.dcim.sites.filter(region=region)
@@ -166,15 +157,13 @@ def create_device():
         'device_role': device_role.id
     }
 
-    # errors = []
     _device = None
     _interface = None
-    # pynetbox.core.query.RequestError: The request failed with code 400 Bad Request: {'name': ['A device with this name already exists.']}
+
     try:
         _device = nb.dcim.devices.create(**device_params)
         flash('Устройство создано!', category='success')
     except pynetbox.core.query.RequestError as ex:
-        # errors.append(ex.error)
         flash('Устройство уже существует', category='danger')
 
     if _device:
@@ -185,7 +174,6 @@ def create_device():
             _ip_on_interface = nb.ipam.ip_addresses.create(interface=_interface.id, address=ip)
             flash('IP адрес создан!', category='success')
         except pynetbox.core.query.RequestError as ex:
-            # errors.append(ex.error)
             flash('IP адрес не создан!', category='danger')
 
         if _ip_on_interface:
