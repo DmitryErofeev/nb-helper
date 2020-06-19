@@ -1,17 +1,22 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block content_title %}
-<p>
+{% block title %} {{ super() }} | Step 6 {% endblock %}
+
+{% block app_content %}
     <h2>
-        Добавление устройства...
+        Добавление устройства:
     </h2>
-
-</p>
 
 {% endblock %}
 
+
 {% block content %}
 
+{% for msg in get_flashed_messages(True) %}
+<div class="flash">{{msg}}</div>
+{% endfor %}
+
+<br>
 {{ data }}
 
 {% endblock %}

@@ -1,51 +1,17 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block content_title %}
-<p>
+{% block title %} {{ super() }} | Step 5 {% endblock %}
+
+{% block app_content %}
     <h2>
         Выберите свободный IP:
     </h2>
 
-</p>
-
-{% endblock %}
-
-{% block content %}
-
-<form method="Post" action="{{ url_for('create_device') }}">
-    Регион:
-    {{ form.region }}
-    <br>
-    <br>
-    Сайт:
-    {{ form.site }}
-    <br>
-    <br>
-    Модель:
-    {{ form.device_type }}
-    <br>
-    <br>
-    Интерфейс mgmt:
-    {{ form.mgmt_interface }}
-    <br>
-    <br>
-    Vlan:
-    {{ form.vlan }}
-    <br>
-    <br>
-    Ip:
-    {{ form.ip }}
-    <br>
-    <br>
-    Имя добавляемого устройства:
-    {{ form.name_device }}
-    <br>
-    <br>
-    {{ form.button }}
-
-</form>
-<br>
-<br>
-{{ form.data }}
-
+    <form class="form form-horizontal" method="Post" action="{{ url_for('create_device') }}">
+        <div class="row">
+            <div class="col-md-4">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </form>
 {% endblock %}

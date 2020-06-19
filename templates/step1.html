@@ -1,21 +1,17 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block content_title %}
-<p>
+{% block title %} {{ super() }} | Step 1 {% endblock %}
+
+{% block app_content %}
     <h2>
         Выберите регион:
     </h2>
 
-</p>
-
-{% endblock %}
-
-{% block content %}
-
-<form method="Post" action="{{ url_for('count_sites') }}">
-
-    {{form.regions}}
-    {{ form.button }}
-
-</form>
+    <form class="form form-horizontal" method="Post" action="{{ url_for('count_sites') }}">
+        <div class="row">
+            <div class="col-md-4">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </form>
 {% endblock %}

@@ -1,20 +1,19 @@
-<html>
-<head>
-    <title>
-        {% block title %}
-        NetBox | Helper
-        {% endblock %}
-    </title>
-</head>
-<body>
+{% extends "bootstrap/base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-
-{% block content_title %}
-{% endblock %}
-
+{% block title %} NetBox Helper | Device {% endblock %}
 
 {% block content %}
-{% endblock %}
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-</body>
-</html>
+        {# содержимое приложения которое должно быть предоставлено в блоке app_content #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}

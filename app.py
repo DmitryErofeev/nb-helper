@@ -1,10 +1,12 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, flash, get_flashed_messages, render_template, url_for, request
+from flask_bootstrap import Bootstrap
 import pynetbox, os
 from flask_wtf import FlaskForm
 from wtforms import TextField, StringField, validators, SelectField, TextAreaField, SubmitField, HiddenField
 
 
 app = Flask(__name__)
+Bootstrap(app)
 app.conﬁg['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'hard to guess string'
 
 nb_url = 'http://10.100.3.128:33080/'
@@ -18,11 +20,11 @@ class SelectForm(FlaskForm):
 
 
 class RegionForm(SelectForm):
-    regions = SelectField('Список', choices=[])
+    regions = SelectField('Регион', choices=[])
 
 
 class SiteForm(SelectForm):
-    sites = SelectField('Список', choices=[])
+    sites = SelectField('Сайт', choices=[])
 
 
 class DeviceTypeForm(SelectForm):
@@ -159,12 +161,36 @@ def create_device():
         'name': name_device,
         'device_role': device_role.id
     }
-    _device = nb.dcim.devices.create(**device_params)
-    # _device = nb.dcim.devices.get(9080)
-    _interface = nb.dcim.interfaces.get(device_id=_device.id, name=interface)
-    _ip_on_interface = nb.ipam.ip_addresses.create(interface=_interface.id, address=ip)
-    _device.update({'primary_ip4': _ip_on_interface.id})
-    return render_template('step6.html', data={'device': _device.id, 'interface': _interface.id, 'params': device_params})
+
+    # errors = []
+    _device = None
+    _interface = None
+    # pynetbox.core.query.RequestError: The request failed with code 400 Bad Request: {'name': ['A device with this name already exists.']}
+    try:
+        _device = nb.dcim.devices.create(**device_params)
+        flash('Устройство создано!', category='success')
+    except pynetbox.core.query.RequestError as ex:
+        # errors.append(ex.error)
+        flash('Устройство уже существует', category='error')
+
+    if _device:
+        _interface = nb.dcim.interfaces.get(device_id=_device.id, name=interface)
+
+        _ip_on_interface = None
+        try:
+            _ip_on_interface = nb.ipam.ip_addresses.create(interface=_interface.id, address=ip)
+            flash('IP адрес создан!', category='success')
+        except pynetbox.core.query.RequestError as ex:
+            # errors.append(ex.error)
+            flash('IP адрес не создан!', category='error')
+
+        if _ip_on_interface:
+            _device.update({'primary_ip4': _ip_on_interface.id})
+            flash('Primary IP адрес установлен!', category='success')
+
+    return render_template('step6.html', data={
+        'device': _device, 'interface': _interface,
+        'params': device_params})
 
 
 if __name__ == '__main__':

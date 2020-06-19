@@ -1,43 +1,16 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block content_title %}
-<p>
+{% block title %} {{ super() }} | Step 4 {% endblock %}
+
+{% block app_content %}
     <h2>
-        Выберите VLAN:
-    </h2>
+        Выберите VLAN:    </h2>
 
-</p>
-
-{% endblock %}
-
-{% block content %}
-
-<form method="Post" action="{{ url_for('count_ip') }}">
-
-<br>
-    Регион:
-    {{ form.region }}
-</br>
-
-<br>
-    Сайт:
-    {{ form.site }}
-</br>
-
-<br>
-    Модель:
-    {{ form.device_type }}
-</br>
-
-<br>
-    Vlan:
-    {{ form.vlan }}
-</br>
-
-<br>
-    {{ form.button }}
-</br>
-
-</form>
-
+    <form class="form form-horizontal" method="Post" action="{{ url_for('count_ip') }}">
+        <div class="row">
+            <div class="col-md-4">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </form>
 {% endblock %}
