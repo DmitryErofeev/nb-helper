@@ -2,3 +2,5 @@ flask
 pynetbox
 flask_wtf
 wtforms
+os
+flask_bootstrap

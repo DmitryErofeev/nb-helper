@@ -3,20 +3,8 @@
 {% block title %} {{ super() }} | Step 6 {% endblock %}
 
 {% block app_content %}
-    <h2>
-        Добавление устройства:
-    </h2>
-
-{% endblock %}
-
-
-{% block content %}
-
-{% for msg in get_flashed_messages(True) %}
-<div class="flash">{{msg}}</div>
-{% endfor %}
-
-<br>
-{{ data }}
+{% if device %}
+    Перейти на устройство:  <a href="{{ nb_url }}dcim/devices/{{ device.id }}">{{ device.display_name }}</a>
+{% endif %}
 
 {% endblock %}

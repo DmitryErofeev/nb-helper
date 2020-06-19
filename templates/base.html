@@ -4,16 +4,17 @@
 {% block title %} NetBox Helper | Device {% endblock %}
 
 {% block content %}
-    <div class="container">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-info" role="alert">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-
-        {# содержимое приложения которое должно быть предоставлено в блоке app_content #}
-        {% block app_content %}{% endblock %}
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }}" role="alert">
+        {{ message }}
     </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% block app_content %}{% endblock %}
+</div>
 {% endblock %}

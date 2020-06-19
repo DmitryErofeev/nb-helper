@@ -15,31 +15,35 @@ token = os.getenv('NETBOX_TOKEN')
 nb = pynetbox.api(nb_url, token)
 
 
-class SelectForm(FlaskForm):
+# class SelectForm(FlaskForm):
+#     button = SubmitField('Next step')
+
+
+class RegionForm(FlaskForm):
+    regions = SelectField('Регион', choices=[])
     button = SubmitField('Next step')
 
 
-class RegionForm(SelectForm):
-    regions = SelectField('Регион', choices=[])
-
-
-class SiteForm(SelectForm):
+class SiteForm(FlaskForm):
     sites = SelectField('Сайт', choices=[])
+    button = SubmitField('Next step')
 
 
-class DeviceTypeForm(SelectForm):
+class DeviceTypeForm(FlaskForm):
     types = SelectField('Список', choices=[])
     site = HiddenField()
+    button = SubmitField('Next step')
 
 
-class VlanForm(SelectForm):
+class VlanForm(FlaskForm):
     device_type = StringField()
     site = StringField()
     region = StringField()
     vlan = SelectField('Список', choices=[])
+    button = SubmitField('Next step')
 
 
-class IpForm(SelectForm):
+class IpForm(FlaskForm):
     region = StringField()
     site = StringField()
     device_type = StringField()
@@ -171,7 +175,7 @@ def create_device():
         flash('Устройство создано!', category='success')
     except pynetbox.core.query.RequestError as ex:
         # errors.append(ex.error)
-        flash('Устройство уже существует', category='error')
+        flash('Устройство уже существует', category='danger')
 
     if _device:
         _interface = nb.dcim.interfaces.get(device_id=_device.id, name=interface)
@@ -182,15 +186,13 @@ def create_device():
             flash('IP адрес создан!', category='success')
         except pynetbox.core.query.RequestError as ex:
             # errors.append(ex.error)
-            flash('IP адрес не создан!', category='error')
+            flash('IP адрес не создан!', category='danger')
 
         if _ip_on_interface:
             _device.update({'primary_ip4': _ip_on_interface.id})
             flash('Primary IP адрес установлен!', category='success')
 
-    return render_template('step6.html', data={
-        'device': _device, 'interface': _interface,
-        'params': device_params})
+    return render_template('step6.html', nb_url=nb_url, device=_device)
 
 
 if __name__ == '__main__':
