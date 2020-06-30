@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %} {{ super() }} | Step 3 {% endblock %}
+{% block title %} {{ super() }} | Step 1 {% endblock %}
 
 {% block app_content %}
     <h2>
-        Выберите модель:    </h2>
+        Выберите регион:
+    </h2>
 
-    <form class="form form-horizontal" method="Post" action="{{ url_for('count_vlan') }}">
+    <form class="form form-horizontal" method="Post" action="{{ url_for('add_device.count_sites') }}">
         <div class="row">
             <div class="col-md-4">
                 {{ wtf.quick_form(form) }}
