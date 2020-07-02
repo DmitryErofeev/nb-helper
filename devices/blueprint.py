@@ -1,6 +1,5 @@
 from flask import Blueprint
 from flask import Flask, flash, get_flashed_messages, render_template, url_for, request
-# from flask_bootstrap import Bootstrap
 import pynetbox, os
 from flask_wtf import FlaskForm
 from wtforms import TextField, StringField, validators, SelectField, TextAreaField, SubmitField, HiddenField
@@ -11,8 +10,6 @@ token = os.getenv('NETBOX_TOKEN')
 nb = pynetbox.api(nb_url, token)
 
 add_device = Blueprint('add_device', __name__, template_folder='templates')
-
-
 
 
 class RegionForm(FlaskForm):
@@ -55,7 +52,7 @@ def count_regions():
     form = RegionForm()
     form.regions.choices = [(region.slug, ': '.join([str(region.parent), str(region.name)]))  for region in nb.dcim.regions.all() if region.parent]
 
-    return render_template('step1.html', form=form)
+    return render_template('devices/step1.html', form=form)
 
 
 @add_device.route('/step2', methods=['POST'])
@@ -66,7 +63,7 @@ def count_sites():
         form = SiteForm()
         form.sites.choices = [(site.slug, ': '.join([str(site.name)]))  for site in sites ]
 
-    return render_template('step2.html', form=form, data={'region': region, 'title': "Выбор сайта"})
+    return render_template('devices/step2.html', form=form, data={'region': region, 'title': "Выбор сайта"})
 
 
 @add_device.route('/step3', methods=['POST'])
@@ -78,7 +75,7 @@ def count_device_types():
         device_types = nb.dcim.device_types.all()
         form.types.choices = [(device_type.slug, ': '.join([str(device_type.manufacturer), str(device_type.model)]))  for device_type in device_types]
 
-    return render_template('step3.html', form=form)
+    return render_template('devices/step3.html', form=form)
 
 
 @add_device.route('/step4', methods=['POST'])
@@ -98,7 +95,7 @@ def count_vlan():
         form.region.data = region
         form.vlan.choices = [(vlan.vid, ': '.join( [str(vlan.role), str(vlan)] ))  for vlan in vlans]
 
-    return render_template('step4.html',form=form)
+    return render_template('devices/step4.html',form=form)
 
 
 @add_device.route('/step5', methods=['POST'])
@@ -128,7 +125,7 @@ def count_ip():
         form.ip.choices = [ ip['address']  for ip in _list_ip if int(ip['address'].split('/')[0].split('.')[-1]) > 25 ]
         form.name_device.data = name_device
 
-    return render_template('step5.html', form=form)
+    return render_template('devices/step5.html', form=form)
 
 
 @add_device.route('/step6', methods=['POST'])
@@ -180,4 +177,4 @@ def create_device():
             _device.update({'primary_ip4': _ip_on_interface.id})
             flash('Primary IP адрес установлен!', category='success')
 
-    return render_template('step6.html', nb_url=nb_url, device=_device)
+    return render_template('devices/step6.html', nb_url=nb_url, device=_device)
