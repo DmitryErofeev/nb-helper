@@ -1,10 +1,13 @@
 {% extends "bootstrap/base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+
 {% block title %} NetBox Helper | Site {% endblock %}
+
 
 {% block content %}
 <div class="container">
+
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}
@@ -14,6 +17,7 @@
     {% endfor %}
     {% endif %}
     {% endwith %}
+
 
     {% block app_content %}{% endblock %}
 </div>

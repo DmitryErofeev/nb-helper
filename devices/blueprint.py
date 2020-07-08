@@ -14,37 +14,37 @@ add_device = Blueprint('add_device', __name__, template_folder='templates')
 
 class RegionForm(FlaskForm):
     regions = SelectField('Регион', choices=[])
-    button = SubmitField('Next step')
+    button = SubmitField('Следующий шаг')
 
 
 class SiteForm(FlaskForm):
     sites = SelectField('Сайт', choices=[])
-    button = SubmitField('Next step')
+    button = SubmitField('Следующий шаг')
 
 
 class DeviceTypeForm(FlaskForm):
-    types = SelectField('Список', choices=[])
+    types = SelectField('Список моделей', choices=[])
     site = HiddenField()
-    button = SubmitField('Next step')
+    button = SubmitField('Следующий шаг')
 
 
 class VlanForm(FlaskForm):
-    device_type = StringField()
-    site = StringField()
-    region = StringField()
-    vlan = SelectField('Список', choices=[])
-    button = SubmitField('Next step')
+    device_type = StringField('Модель(DeviceType)')
+    site = StringField('Сайт(site)')
+    region = StringField('Регион(Region)')
+    vlan = SelectField('Список Vlan-ов', choices=[])
+    button = SubmitField('Следующий шаг')
 
 
 class IpForm(FlaskForm):
-    region = StringField()
-    site = StringField()
-    device_type = StringField()
-    mgmt_interface = SelectField('Список', choices=[])
-    vlan = StringField()
-    ip = SelectField('Список', choices=[])
-    name_device = StringField()
-    button = SubmitField('Add device')
+    region = StringField('Регион(Region)')
+    site = StringField('Сайт(site)')
+    device_type = StringField('Модель(DeviceType)')
+    mgmt_interface = SelectField('Интерфейс управления', choices=[])
+    vlan = StringField('Номер Vlan-а')
+    ip = SelectField('Список свободных адресов', choices=[])
+    name_device = StringField('Имя добавляемого устройства')
+    button = SubmitField('Отправить в NetBox')
 
 
 @add_device.route('/step1', methods=['GET'])

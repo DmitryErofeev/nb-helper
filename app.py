@@ -7,7 +7,7 @@ from sites.blueprint import add_site
 
 app = Flask(__name__)
 Bootstrap(app)
-app.conﬁg['SECRET_KEY'] = os.getenv('SECRET_KEY') or 'hard to guess string'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY') or os.urandom(32)
 
 app.register_blueprint(add_device, url_prefix='/devices')
 app.register_blueprint(add_site, url_prefix='/sites')

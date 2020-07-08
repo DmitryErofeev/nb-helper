@@ -1,6 +1,25 @@
+{% extends "bootstrap/base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+
+{% block title %} NetBox Helper | Site {% endblock %}
+
+
+{% block content %}
+<div class="container">
+
+
+    {% block app_content %}
 
     <h1>
-NetBox Helper
-    </h1>
-    <a href="{{url_for('add_device.count_regions') }}">Добавить устройство</a>
-    <a href="{{url_for('add_site.count_regions') }}">Добавить сайт</a>
+        NetBox Helper
+            </h1>
+            <a href="{{url_for('add_device.count_regions') }}"><button type="button" class="btn btn-primary">Добавить устройство</button></a>
+            <a href="{{url_for('add_site.count_regions') }}"><button type="button" class="btn btn-primary">Добавить сайт</button></a>
+
+    {% endblock %}
+
+</div>
+{% endblock %}
+
+
