@@ -1,8 +1,8 @@
 from flask import Blueprint
-from flask import Flask, flash, get_flashed_messages, render_template, url_for, request
+from flask import flash, render_template, request
 import pynetbox, os
 from flask_wtf import FlaskForm
-from wtforms import TextField, StringField, validators, SelectField, TextAreaField, SubmitField, HiddenField
+from wtforms import StringField, SelectField, SubmitField, HiddenField
 
 nb_url = os.getenv('NETBOX_URL')
 token = os.getenv('NETBOX_TOKEN')
