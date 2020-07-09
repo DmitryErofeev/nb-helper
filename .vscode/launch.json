@@ -15,7 +15,8 @@
                 "NETBOX_URL": "http://10.100.3.128:33080/",
                 // "FLASK_APP": "main.py",
                 "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1"
+                "FLASK_DEBUG": "1",
+                "SECRET_KEY": "hard to guess string"
             },
             "args": [
                 "run",
