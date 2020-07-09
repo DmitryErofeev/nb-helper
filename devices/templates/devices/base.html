@@ -1,19 +1,12 @@
-{% extends "bootstrap/base.html" %}
-{% import 'bootstrap/wtf.html' as wtf %}
+{% extends "bootstrap.html" %}
+{% from 'bootstrap/form.html' import render_form %}
+{% from 'bootstrap/utils.html' import render_messages %}
 
 {% block title %} NetBox Helper | Device {% endblock %}
 
 {% block content %}
 <div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }}" role="alert">
-        {{ message }}
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    {{ render_messages() }}
 
     {% block app_content %}{% endblock %}
 </div>

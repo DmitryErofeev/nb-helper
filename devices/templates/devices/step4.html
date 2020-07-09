@@ -9,7 +9,7 @@
     <form class="form form-horizontal" method="Post" action="{{ url_for('add_device.count_ip') }}">
         <div class="row">
             <div class="col-md-4">
-                {{ wtf.quick_form(form) }}
+                {{ render_form(form) }}
             </div>
         </div>
     </form>
