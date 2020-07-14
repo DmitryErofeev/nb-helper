@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, session
 from flask import flash, render_template, request
 import pynetbox, os
 from flask_wtf import FlaskForm

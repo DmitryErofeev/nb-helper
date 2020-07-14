@@ -2,5 +2,5 @@ flask
 pynetbox
 flask_wtf
 wtforms
-flask_bootstrap
+bootstrap-flask
 transliterate

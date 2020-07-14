@@ -1,5 +1,6 @@
-from flask import Blueprint, flash, render_template, request, session
-import pynetbox, os, requests, json, functools, re
+from os import abort
+from flask import Blueprint, flash, render_template, request, session, abort
+import pynetbox, os, requests, functools, re
 from flask_wtf import FlaskForm
 from wtforms import StringField, validators, SelectField, SubmitField
 from utils.transliteration import transliterate
@@ -84,7 +85,13 @@ def search():
 
     session['result'] = _fias['result']
 
-    form.houses.choices = [(item['guid'], '. '.join([ item['typeShort'], item['name'] ])) for item in _fias['result']]
+    if _fias['result'] is None:
+
+        flash('Нет такого адреса, повторите ввод!', category='danger')
+        form.houses.choices = []
+
+    else:
+        form.houses.choices = [(item['guid'], '. '.join([ item['typeShort'], item['name'] ])) for item in _fias['result']]
 
     return render_template('sites/step3.html', form=form)
 
@@ -98,12 +105,14 @@ def final_step():
 
     search = request.form.get('search')
     fiasId = request.form.get('houses')
+    if not (fiasId or session['result']):
+        abort(500)
     _resu = result_search(fiasId, session['result'])[0]
     site_params = {
-    "name": [],
-    "slug": [],
-    "region": [],
-    "description": [],
+    "name": '',
+    "slug": '',
+    "region": '',
+    "description": '',
     }
 
     if _resu['contentType'] == 'building':

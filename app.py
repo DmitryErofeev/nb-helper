@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
-import pynetbox, os
+import os
 from devices.blueprint import add_device
 from sites.blueprint import add_site
 
