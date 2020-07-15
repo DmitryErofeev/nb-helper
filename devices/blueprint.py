@@ -122,7 +122,8 @@ def count_ip():
         form.device_type.data = device_type
         form.mgmt_interface.choices = [_int for _int in interface]
         form.vlan.data = vlan
-        form.ip.choices = [ ip['address']  for ip in _list_ip if int(ip['address'].split('/')[0].split('.')[-1]) > 25 ]
+
+        form.ip.choices = [ ip.address  for ip in _list_ip if int(ip.address.split('/')[0].split('.')[-1]) > 25 ]
         form.name_device.data = name_device
 
     return render_template('devices/step5.html', form=form)
