@@ -106,7 +106,7 @@ def final_step():
     search = request.form.get('search')
     fiasId = request.form.get('houses')
     if not (fiasId or session['result']):
-        abort(500)
+        abort(400)
     _resu = result_search(fiasId, session['result'])[0]
     site_params = {
     "name": '',
