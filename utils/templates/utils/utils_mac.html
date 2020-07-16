@@ -1,0 +1,22 @@
+{% extends "bootstrap.html" %}
+{% from 'bootstrap/form.html' import render_form %}
+
+
+{% block title %}
+NetBox Helper | Утилиты
+{%endblock%}
+
+{% block content %}
+<div class="container">
+
+<form class="form form-horizontal" method="Post" action="">
+    <div class="row">
+        <div class="col-md-4">
+            {{ render_form(form) }}
+        </div>
+    </div>
+</form>
+
+</div>
+
+{% endblock %}

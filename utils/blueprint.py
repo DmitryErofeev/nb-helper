@@ -1,3 +1,4 @@
+import requests, functools
 from flask import Blueprint, render_template, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
@@ -15,10 +16,18 @@ class UtilsForm(FlaskForm):
     submit_slug = SubmitField('Сделать слаг')
 
 
-@add_utils.route('/', methods=['POST', 'GET'])
-def utils():
+class MacVendor(FlaskForm):
+    input_mac = StringField('Введите МАК:')
+    output_mac = TextAreaField('Вендор МАКа:')
+    submit = SubmitField('Узнать Вендора')
+
+
+@add_utils.route('/utils-slug', methods=['POST', 'GET'])
+def utils_slug():
     form = UtilsForm()
+
     if request.method == 'POST':
+
         _trans = transliterate(request.form.get('input_for_transliterate'))
         trans = _trans.replace('.', "")  # TODO: сделать функцией подготовки
 
@@ -26,4 +35,22 @@ def utils():
 
         slug = slugify(trans.replace('/', "-"))
         form.output_slugifyed.data = slug
-    return render_template('utils/utils.html', form=form)
+
+    return render_template('utils/utils_slug.html', form=form)
+
+
+@functools.lru_cache
+@add_utils.route('/utils-mac', methods=['POST', 'GET'])
+def utils_mac():
+    form = MacVendor()
+
+    if request.method == 'POST':
+
+        mac = request.form.get ('input_mac')
+        url = f"https://api.macvendors.com/{mac}"
+
+        response = requests.get(url)
+        form.output_mac.data = response.text
+
+
+    return render_template('utils/utils_mac.html', form=form)
