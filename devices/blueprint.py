@@ -23,15 +23,13 @@ class SiteForm(FlaskForm):
 
 
 class DeviceTypeForm(FlaskForm):
-    types = SelectField('Список моделей', choices=[])
+    types = SelectField('Выберите модель:', choices=[])
+    roles = SelectField('Выберите роль:')
     site = HiddenField()
     button = SubmitField('Следующий шаг')
 
 
 class VlanForm(FlaskForm):
-    device_type = StringField('Модель(DeviceType)')
-    site = StringField('Сайт(site)')
-    region = StringField('Регион(Region)')
     vlan = SelectField('Список Vlan-ов', choices=[])
     button = SubmitField('Следующий шаг')
 
@@ -40,6 +38,7 @@ class IpForm(FlaskForm):
     region = StringField('Регион(Region)')
     site = StringField('Сайт(site)')
     device_type = StringField('Модель(DeviceType)')
+    role = StringField('Роль устройства:')
     mgmt_interface = SelectField('Интерфейс управления', choices=[])
     vlan = StringField('Номер Vlan-а')
     ip = SelectField('Список свободных адресов', choices=[])
@@ -51,29 +50,32 @@ class IpForm(FlaskForm):
 def count_regions():
     form = RegionForm()
     form.regions.choices = [(region.slug, ': '.join([str(region.parent), str(region.name)]))  for region in nb.dcim.regions.all() if region.parent]
-
     return render_template('devices/step1.html', form=form)
 
 
 @add_device.route('/step2', methods=['POST'])
 def count_sites():
     if request.method == 'POST':
-        region = request.form.get('regions')
-        sites = nb.dcim.sites.filter(region=region)
         form = SiteForm()
+
+        session['region'] = request.form.get('regions')
+        sites = nb.dcim.sites.filter(region=session['region'])
         form.sites.choices = [(site.slug, ': '.join([str(site.name)]))  for site in sites ]
 
-    return render_template('devices/step2.html', form=form, data={'region': region, 'title': "Выбор сайта"})
+    return render_template('devices/step2.html', form=form)
 
 
 @add_device.route('/step3', methods=['POST'])
 def count_device_types():
     if request.method == 'POST':
-        site = request.form.get('sites')
         form = DeviceTypeForm()
-        form.site.data = site
+
+        session['site'] = request.form.get('sites')
+        device_roles = nb.dcim.device_roles.all()
         device_types = nb.dcim.device_types.all()
+
         form.types.choices = [(device_type.slug, ': '.join([str(device_type.manufacturer), str(device_type.model)]))  for device_type in device_types]
+        form.roles.choices = [role for role in device_roles]
 
     return render_template('devices/step3.html', form=form)
 
@@ -82,17 +84,15 @@ def count_device_types():
 def count_vlan():
     if request.method == 'POST':
         form = VlanForm()
+        session['device_type'] = request.form.get('types')
+        session['device_role'] = request.form.get('roles')
 
-        device_type = request.form.get('types')
-        site = request.form.get('site')
-        _site = nb.dcim.sites.get(slug=site)
-        region = nb.dcim.regions.get(_site.region.id)
-        vlan_group = nb.ipam.vlan_groups.get(slug=region.slug)
+        _site = nb.dcim.sites.get(slug=session['site'])
+        _region = nb.dcim.regions.get(_site.region.id)
+
+        vlan_group = nb.ipam.vlan_groups.get(slug=_region.slug)
         vlans = nb.ipam.vlans.filter(group_id=vlan_group.id)
 
-        form.device_type.data = device_type
-        form.site.data = site
-        form.region.data = region
         form.vlan.choices = [(vlan.vid, ': '.join( [str(vlan.role), str(vlan)] ))  for vlan in vlans]
 
     return render_template('devices/step4.html',form=form)
@@ -103,55 +103,43 @@ def count_ip():
     if request.method == 'POST':
         form = IpForm()
 
-        region = request.form.get('region')
-        _region = nb.dcim.regions.get(name=region)
-
-        site = request.form.get('site')
-        _site = nb.dcim.sites.get(slug=site)
-
-        device_type = request.form.get('device_type')
-        _device_type = nb.dcim.device_types.get(slug=device_type)
-
-        vlan = request.form.get('vlan')
-        _list_ip = nb.ipam.prefixes.get(vlan_vid=vlan).available_ips.list()
+        session['vlan'] = request.form.get('vlan')
+        _region = nb.dcim.regions.get(slug=session['region'])
+        _site = nb.dcim.sites.get(slug=session['site'])
+        _device_type = nb.dcim.device_types.get(slug=session['device_type'])
+        _list_ip = nb.ipam.prefixes.get(vlan_vid=session['vlan']).available_ips.list()
         interface = nb.dcim.interface_templates.filter(devicetype_id=_device_type.id, mgmt_only=True)
+
         name_device = '-'.join([_region.parent.slug, _site.slug])
 
-        form.region.data = region
-        form.site.data = site
-        form.device_type.data = device_type
+        form.region.data = session['region']
+        form.site.data = session['site']
+        form.device_type.data = session['device_type']
+        form.role.data = session['device_role']
         form.mgmt_interface.choices = [_int for _int in interface]
-        form.vlan.data = vlan
+        form.vlan.data = session['vlan']
+        form.name_device.data = name_device
 
         form.ip.choices = [ ip.address  for ip in _list_ip if int(ip.address.split('/')[0].split('.')[-1]) > 25 ]
-        form.name_device.data = name_device
 
     return render_template('devices/step5.html', form=form)
 
 
 @add_device.route('/step6', methods=['POST'])
 def create_device():
-    DEVICE_ROLE = 'access-switch'
+    session['interface'] = request.form.get('mgmt_interface')
+    session['ip'] = request.form.get('ip')
+    session['name_device'] = request.form.get('name_device')
 
-    region = request.form.get('region')
-
-    site = request.form.get('site')
-    _site = nb.dcim.sites.get(slug=site)
-
-    device_type = request.form.get('device_type')
-    _device_type = nb.dcim.device_types.get(slug=device_type)
-
-    interface = request.form.get('mgmt_interface')
-    vlan = request.form.get('vlan')
-    ip = request.form.get('ip')
-    name_device = request.form.get('name_device')
-    device_role = nb.dcim.device_roles.get(slug=DEVICE_ROLE)
+    _site = nb.dcim.sites.get(slug=session['site'])
+    _device_type = nb.dcim.device_types.get(slug=session['device_type'])
+    device_role = nb.dcim.device_roles.get(name=session['device_role'])
 
     device_params = \
     {
         'site': _site.id,
         'device_type': _device_type.id,
-        'name': name_device,
+        'name': session['name_device'],
         'device_role': device_role.id
     }
 
@@ -165,11 +153,11 @@ def create_device():
         flash('Устройство уже существует', category='danger')
 
     if _device:
-        _interface = nb.dcim.interfaces.get(device_id=_device.id, name=interface)
+        _interface = nb.dcim.interfaces.get(device_id=_device.id, name=session['interface'])
 
         _ip_on_interface = None
         try:
-            _ip_on_interface = nb.ipam.ip_addresses.create(interface=_interface.id, address=ip)
+            _ip_on_interface = nb.ipam.ip_addresses.create(interface=_interface.id, address=session['ip'])
             flash('IP адрес создан!', category='success')
         except pynetbox.core.query.RequestError as ex:
             flash('IP адрес не создан!', category='danger')
