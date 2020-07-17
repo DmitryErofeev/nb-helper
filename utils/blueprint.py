@@ -1,9 +1,10 @@
 import requests, functools
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, current_app, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from .transliteration import transliterate
 from .slugify import slugify
+from cache import cache
 
 add_utils = Blueprint('add_utils', __name__, template_folder='templates')
 
@@ -39,21 +40,25 @@ def utils_slug():
     return render_template('utils/utils_slug.html', form=form)
 
 
-@functools.lru_cache
 @add_utils.route('/utils-mac', methods=['POST', 'GET'])
 def utils_mac():
     form = MacVendor()
 
     if request.method == 'POST':
 
-        mac = request.form.get ('input_mac')
+        res = get_mac_request(request.form.get ('input_mac'))
+        form.output_mac.data = res
+
+    return render_template('utils/utils_mac.html', form=form)
+
+@cache.memoize()
+def get_mac_request(mac: str) -> str:
         url = f"https://api.macvendors.com/{mac}"
 
         response = requests.get(url)
+        print("get_mac_request()", mac, response.status_code)
 
-        if response.status_code == 200:
-            form.output_mac.data = response.text
+        if response.ok:
+            return response.text
         else:
-            form.output_mac.data = response.reason
-
-    return render_template('utils/utils_mac.html', form=form)
+            return response.reason
