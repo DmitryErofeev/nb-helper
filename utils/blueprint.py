@@ -50,7 +50,10 @@ def utils_mac():
         url = f"https://api.macvendors.com/{mac}"
 
         response = requests.get(url)
-        form.output_mac.data = response.text
 
+        if response.status_code == 200:
+            form.output_mac.data = response.text
+        else:
+            form.output_mac.data = response.reason
 
     return render_template('utils/utils_mac.html', form=form)
