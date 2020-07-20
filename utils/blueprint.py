@@ -1,9 +1,8 @@
-import requests, functools
-from flask import Blueprint, render_template, current_app, request
+import requests
+from flask import Blueprint, render_template, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
-from .transliteration import transliterate
-from .slugify import slugify
+import utils
 from cache import cache
 
 add_utils = Blueprint('add_utils', __name__, template_folder='templates')
@@ -29,13 +28,11 @@ def utils_slug():
 
     if request.method == 'POST':
 
-        _trans = transliterate(request.form.get('input_for_transliterate'))
-        trans = _trans.replace('.', "")  # TODO: сделать функцией подготовки
+        _data = request.form.get('input_for_transliterate')
+        form.output_transliterated.data = utils.transliterate_name(_data)
 
-        form.output_transliterated.data = trans
-
-        slug = slugify(trans.replace('/', "-"))
-        form.output_slugifyed.data = slug
+        _data2 = form.output_transliterated.data
+        form.output_slugifyed.data = utils.slugify_name(_data2)
 
     return render_template('utils/utils_slug.html', form=form)
 
