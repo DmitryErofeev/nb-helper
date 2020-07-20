@@ -4,6 +4,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 import utils
 from cache import cache
+from config import MAC_API_URL
+
 
 add_utils = Blueprint('add_utils', __name__, template_folder='templates')
 
@@ -50,7 +52,7 @@ def utils_mac():
 
 @cache.memoize()
 def get_mac_request(mac: str) -> str:
-        url = f"https://api.macvendors.com/{mac}"
+        url = f"{MAC_API_URL}/{mac}"
 
         response = requests.get(url)
         print("get_mac_request()", mac, response.status_code)
