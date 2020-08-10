@@ -36,6 +36,7 @@ FIAS_CODE = {
 "ku": "5002400300000",
 "oz": "5000002600000",
 "ld": "5000005800000",
+"tc": "5000002600000",
 }
 
 @functools.lru_cache
@@ -122,7 +123,7 @@ def final_step():
         site_name1 = ' '.join([_street['typeShort'], _street['name'], _resu['name']])
         site_name2 = transliterate(site_name1)
 
-        site_name3 = ' '.join([session['region_parent_slug'], site_name2.replace('/', '-')])
+        site_name3 = site_name2.replace('/', '-')
         site_name4 = slugify(site_name3)
 
         site_desc1 = '. '.join([_street['typeShort'], _street['name']])
@@ -154,7 +155,7 @@ def final_step():
             _site_name_rus = ' '.join ([ _resu['typeShort'], _resu['name'], number_of_house ])
             _site_name_trans = transliterate(_site_name_rus)
 
-            _slug_eng = ' '.join([ session['region_parent_slug'], _site_name_trans.replace('/', '-') ])
+            _slug_eng = _site_name_trans.replace('/', '-')
             _slug_slugifyed = slugify(_slug_eng)
 
             _site_desc = '. '.join([ _resu['typeShort'], _resu['name'] ])
