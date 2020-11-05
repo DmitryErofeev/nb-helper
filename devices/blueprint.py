@@ -180,7 +180,8 @@ def create_device():
         _ip_on_interface = None
         try:
             _ip_on_interface = nb.ipam.ip_addresses.create(
-                interface=_interface.id, address=session["ip"]
+                assigned_object_type="dcim.interface",
+                assigned_object_id=_interface.id, address=session["ip"]
             )
             flash("IP адрес создан!", category="success")
         except pynetbox.core.query.RequestError as ex:
