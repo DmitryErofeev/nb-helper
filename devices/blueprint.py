@@ -27,6 +27,7 @@ class DeviceTypeForm(FlaskForm):
     types = SelectField("Выберите модель:", choices=[])
     roles = SelectField("Выберите роль:")
     site = HiddenField()
+
     button = SubmitField("Следующий шаг")
 
 
@@ -44,6 +45,7 @@ class IpForm(FlaskForm):
     vlan = StringField("Номер Vlan-а")
     ip = SelectField("Список свободных адресов", choices=[])
     name_device = StringField("Имя добавляемого устройства")
+    status_device = StringField('Статус добавляемого устройства')
     button = SubmitField("Отправить в NetBox")
 
 
@@ -136,6 +138,7 @@ def count_ip():
         form.mgmt_interface.choices = [_int for _int in interface]
         form.vlan.data = session["vlan"]
         form.name_device.data = name_device
+        form.status_device.data = 'staged'
 
         form.ip.choices = [
             ip.address
@@ -151,6 +154,7 @@ def create_device():
     session["interface"] = request.form.get("mgmt_interface")
     session["ip"] = request.form.get("ip")
     session["name_device"] = request.form.get("name_device")
+    session["status_device"] = request.form.get("status_device")
 
     _site = nb.dcim.sites.get(slug=session["site"])
     _device_type = nb.dcim.device_types.get(slug=session["device_type"])
@@ -161,7 +165,8 @@ def create_device():
         "device_type": _device_type.id,
         "name": session["name_device"],
         "device_role": device_role.id,
-    }
+        "status": session["status_device"]
+        }
 
     _device = None
     _interface = None

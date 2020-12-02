@@ -1,6 +1,7 @@
 from os import abort
 from flask import Blueprint, flash, render_template, request, session, abort
 import pynetbox, os, requests, functools, re
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, validators, SelectField, SubmitField
 from utils.transliteration import transliterate
@@ -39,12 +40,21 @@ FIAS_CODE = {
 "tc": "5000100000000",
 }
 
+FIAS_NAME = {
+"dm": "Демихово",
+"kb": "д. Кабаново",
+"ku": "г. Куровское",
+"oz": "г. Орехово-Зуево",
+"ld": "г. Ликино-Дулево",
+"tc": "г. Орехово-Зуево",
+}
+
 @functools.lru_cache
-def fias(query: str, cityid: str) -> requests.Response:
+def fias(query: str, cityid: str, cityName: str) -> requests.Response:
     url = 'https://kladr-api.ru/api.php'
     params = {
-        'query': query.replace('/', '\/'),
-        'cityId': cityid,
+        'query': cityName + " " + query.replace('/', '\/'),# добавили cityname т.к. citiid перестал работать
+        # 'cityId': cityid,
         'contentType': 'building',
         'withParent': 1,
         'limit': 30,
@@ -82,7 +92,7 @@ def search():
     search = request.form.get('search')
     region = session['region_parent_slug']
 
-    _fias = fias(search, FIAS_CODE[region]).json()
+    _fias = fias(search, FIAS_CODE[region], FIAS_NAME[region]).json()
 
     session['result'] = _fias['result']
 
@@ -91,7 +101,7 @@ def search():
         flash('Нет такого адреса, повторите ввод!', category='danger')
         form.houses.choices = []
 
-    else:
+    else: #делает b-r вместо br
         form.houses.choices = [(item['guid'], '. '.join([ item['typeShort'], item['name'] ])) for item in _fias['result']]
 
     return render_template('sites/step3.html', form=form)
