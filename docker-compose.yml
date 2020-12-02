@@ -1,0 +1,12 @@
+
+version: '3.8'
+
+services:
+  nb-helper:
+    env_file: nb-helper.env
+    build:
+      context: .
+    image: nb-helper:latest
+    restart: always
+    ports:
+      - "33050:5000"
