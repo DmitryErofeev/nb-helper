@@ -65,6 +65,13 @@ def fias(query: str, cityid: str, cityName: str) -> requests.Response:
     return response
 
 
+
+# Преобразует ответ из кладра в короткий вариант, если нет в дикте- возвращает прилетевшее значение обратно
+def replace_answer_fias(data):
+    prefixes = {'проезд': 'пр', 'б-р': 'бр'}
+    return prefixes.get(data, data)
+
+
 @add_site.route('/step1')
 def count_regions():
     form = RegionForm()
@@ -85,6 +92,7 @@ def count_sites():
     return render_template('sites/step2.html', form=form)
 
 
+
 @add_site.route('step3', methods=['POST'])
 def search():
     form = FiasForm()
@@ -102,7 +110,7 @@ def search():
         form.houses.choices = []
 
     else: #делает b-r вместо br
-        form.houses.choices = [(item['guid'], '. '.join([ item['typeShort'], item['name'] ])) for item in _fias['result']]
+        form.houses.choices = [(item['guid'], '. '.join([item['typeShort'], item['name'] ])) for item in _fias['result']]
 
     return render_template('sites/step3.html', form=form)
 
@@ -130,7 +138,7 @@ def final_step():
         print(_resu['fullName'])
         _street = result_search(_resu['parentGuid'], _resu["parents"])[0]
 
-        site_name1 = ' '.join([_street['typeShort'], _street['name'], _resu['name']])
+        site_name1 = ' '.join([replace_answer_fias(_street['typeShort']), _street['name'], _resu['name']])
         site_name2 = transliterate(site_name1)
 
         site_name3 = site_name2.replace('/', '-')
