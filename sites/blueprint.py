@@ -189,4 +189,4 @@ def final_step():
            flash('Вы неправильно ввели в поиске номер дома', category='danger')
 
 
-    return render_template('sites/step4.html', data={'site_params': site_params} )
+    return render_template('sites/step4.html', nb_url=nb_url, data={'site_params': site_params} )

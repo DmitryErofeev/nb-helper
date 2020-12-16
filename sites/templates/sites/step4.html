@@ -4,6 +4,13 @@
 
 
 {% block app_content %}
-Параметры сайта:
-{{ data }}
+<!-- Параметры сайта:
+{{ data }} -->
+
+{% if data %}
+    Перейти на устройство:  <a href="{{ nb_url }}dcim/sites/{{ data['site_params']['slug'] }}">{{ data['site_params']['name'] }}</a>
+{% endif %}
 {% endblock %}
+
+
+
