@@ -2,6 +2,7 @@ from flask import Blueprint, session
 from flask import flash, render_template, request
 import pynetbox
 import os
+import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField, HiddenField
 
@@ -12,6 +13,7 @@ nb = pynetbox.api(nb_url, token)
 
 add_device = Blueprint("add_device", __name__, template_folder="templates")
 
+now = datetime.datetime.now()
 
 class RegionForm(FlaskForm):
     regions = SelectField("Регион", choices=[])
@@ -159,13 +161,15 @@ def create_device():
     _site = nb.dcim.sites.get(slug=session["site"])
     _device_type = nb.dcim.device_types.get(slug=session["device_type"])
     device_role = nb.dcim.device_roles.get(name=session["device_role"])
+    _date_remove =now.strftime('%Y-%m-%d')
 
     device_params = {
         "site": _site.id,
         "device_type": _device_type.id,
         "name": session["name_device"],
         "device_role": device_role.id,
-        "status": session["status_device"]
+        "status": session["status_device"],
+        'custom_fields':{'dateSetup':_date_remove},
         }
 
     _device = None
