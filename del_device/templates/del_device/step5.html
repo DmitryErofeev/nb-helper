@@ -1,0 +1,10 @@
+{% extends "del_device/base.html" %}
+
+{% block title %} {{ super() }} | Step 5 {% endblock %}
+
+{% block app_content %}
+{% if device %}
+    Перейти на устройство:  <a href="{{ nb_url }}dcim/devices/{{ device.id }}">{{ device.name }}</a>
+{% endif %}
+
+{% endblock %}

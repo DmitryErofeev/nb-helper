@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_bootstrap import Bootstrap
 import os
 from devices.blueprint import add_device
+from del_device.blueprint import del_device
 from sites.blueprint import add_site
 from utils.blueprint import add_utils
 from api.blueprint import api_bp
@@ -16,9 +17,11 @@ cache.init_app(app)
 
 
 app.register_blueprint(add_device, url_prefix='/devices')
+app.register_blueprint(del_device, url_prefix='/del_device/')
 app.register_blueprint(add_site, url_prefix='/sites')
 app.register_blueprint(add_utils, url_prefix='/utils')
 app.register_blueprint(api_bp, url_prefix='/api/')
+
 
 
 @app.route('/')
