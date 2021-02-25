@@ -52,7 +52,7 @@ def utils_mac():
 
 @cache.memoize()
 def get_mac_request(mac: str) -> str:
-        url = f"{MAC_API_URL}/{mac}"
+        url = f"{MAC_API_URL}{mac}"
 
         response = requests.get(url)
         print("get_mac_request()", mac, response.status_code)

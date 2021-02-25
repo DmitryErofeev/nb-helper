@@ -10,3 +10,16 @@ services:
     restart: always
     ports:
       - "33050:5000"
+
+  redis:
+    image: redis
+    ports:
+      - "36379:6379"
+    command:
+    - redis-server --appendonly yes
+    volumes:
+    - redis-data:/data
+
+volumes:
+  redis-data:
+    driver: local
