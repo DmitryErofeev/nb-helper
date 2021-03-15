@@ -1,0 +1,17 @@
+{% extends "del_device/base.html" %}
+
+{% block title %} {{ super() }} | Step 2 {% endblock %}
+
+{% block app_content %}
+    <h2>
+        Выберите сайт:
+    </h2>
+
+    <form class="form form-horizontal" method="Post" action="{{ url_for('add_utils.get_device') }}">
+        <div class="row">
+            <div class="col-md-4">
+                {{ render_form(form) }}
+            </div>
+        </div>
+    </form>
+{% endblock %}

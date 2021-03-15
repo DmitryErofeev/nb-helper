@@ -1,0 +1,16 @@
+{% extends "del_device/base.html" %}
+
+{% block title %} {{ super() }} | Step 4 {% endblock %}
+
+{% block app_content %}
+    <h2>
+        Выберите линк для удаления:    </h2>
+
+    <form class="form form-horizontal" method="Post" action="{{ url_for('add_utils.del_cable') }}">
+        <div class="row">
+            <div class="col-md-4">
+                {{ render_form(form) }}
+            </div>
+        </div>
+    </form>
+{% endblock %}
