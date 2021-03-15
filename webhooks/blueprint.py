@@ -1,8 +1,14 @@
-from flask import Blueprint, render_template, abort, request
-from manuf import manuf
-# from requests.api import request
+from flask import Blueprint, request
 from cache import cache
-import requests
+# import requests
+import redis
+
+
+r = redis.StrictRedis(
+host='192.168.81.130',
+port=36379,)
+# password='password')
+
 api_webhooks = Blueprint('api_webhooks', __name__, template_folder='templates')
 
 
@@ -10,9 +16,13 @@ api_webhooks = Blueprint('api_webhooks', __name__, template_folder='templates')
 @cache.memoize()
 def get_webhooks():
     if request.method == 'POST':
+        response_code = ''
+        data = request.json
+        try:
+            r.set(data['request_id'], request.data)
+            response_code = '200'
+        except:
+            response_code = '500'
 
-        print(request.json)
-
-
-    return render_template('data.html', data=request.json)
+    return response_code
 
