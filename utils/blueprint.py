@@ -2,6 +2,7 @@ import requests
 from flask import Blueprint, render_template, request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.fields.core import SelectField
 import utils
 from cache import cache
 from config import MAC_API_URL
@@ -22,6 +23,28 @@ class MacVendor(FlaskForm):
     input_mac = StringField('Введите МАК:')
     output_mac = TextAreaField('Вендор МАКа:')
     submit = SubmitField('Узнать Вендора')
+
+
+class GetREgion(FlaskForm):
+    get_region = SelectField('Выберите регион:')
+    submit = SubmitField('Дальше:')
+
+
+class GetSite(FlaskForm):
+    get_site = SelectField('Выберите сайт:')
+    submit = SubmitField('Дальше:')
+
+
+class GetDevice(FlaskForm):
+    get_device = SelectField('Выберите коммутатор:')
+    submit = SubmitField('Дальше:')
+
+
+class GetLink(FlaskForm):
+    get_cable_link = SelectField('Выберите линк для удаления:')
+    submit = SubmitField('Удалить линк:')
+
+
 
 
 @add_utils.route('/utils-slug', methods=['POST', 'GET'])
