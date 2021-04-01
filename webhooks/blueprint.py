@@ -1,28 +1,35 @@
 from flask import Blueprint, request
 from cache import cache
 # import requests
-import redis
+# import redis
+import os
+import time
+from celery import Celery
 
-
-r = redis.StrictRedis(
-host='192.168.81.130',
-port=36379,)
-# password='password')
 
 api_webhooks = Blueprint('api_webhooks', __name__, template_folder='templates')
 
+nb_url = os.getenv("NETBOX_URL")
+token = os.getenv("NETBOX_TOKEN")
 
-@api_webhooks.route('/api/', methods=['POST'])
-@cache.memoize()
-def get_webhooks():
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379'),
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379')
+celery = Celery('tasks', broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
+
+
+
+@api_webhooks.route('/device_update', methods=['POST'])
+# @cache.memoize()
+def device_update():
+    response_code = '500'
     if request.method == 'POST':
-        response_code = ''
         data = request.json
-        try:
-            r.set(data['request_id'], request.data)
-            response_code = '200'
-        except:
-            response_code = '500'
+        tags = data['data']['tags']
+        if any(['webhook' == tag['name'] for tag in tags]): #ищем тэг во всех тэгах
+
+            task = celery.send_task('tasks.device_update', args= [data['request_id'],data], kwargs={})
+
+            response_code = task.id
 
     return response_code
 
