@@ -30,5 +30,7 @@ def device_update():
             task = celery.send_task('tasks.device_update', args=[data['request_id'], data], kwargs={})
 
             response_code = task.id
+        else:
+            response_code = '404'
 
     return response_code

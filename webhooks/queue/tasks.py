@@ -20,5 +20,7 @@ current_date = now.strftime('%Y%m%d')
 
 @celery.task(name='tasks.device_update')
 def device_update(request_id: str, data: dict) -> str:
-    device = nb.dcim.devices.get(name=data['name'])
+    print(data)
+    # device = nb.dcim.devices.get(name=data['name'])
+    # print(device)
     return 'ok'
