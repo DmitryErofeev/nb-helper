@@ -5,30 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Текущий файл",
+            "name": "Python: Celery",
             "type": "python",
             "request": "launch",
-            "module": "flask",
-            "console": "integratedTerminal",
+            "module": "celery",
             "env": {
                 "NETBOX_TOKEN": "03319cd840dcea602826b4c1ba3012761ee49466",
                 "NETBOX_URL": "http://10.100.3.128:33080/",
                 "CELERY_BROKER_URL": "redis://192.168.81.130:36379",
                 "CELERY_RESULT_BACKEND": "redis://192.168.81.130:36379",
-                // "REDIS_HOST":"192.168.81.130",
-                // "REDIS_PORT": "36379",
-
-                // "FLASK_APP": "main.py",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "1",
-                "SECRET_KEY": "hard to guess string"
             },
             "args": [
-                "run",
-                // "--no-debugger",
-                // "--no-reload"
-                "--host=0.0.0.0",
-            ]
+                "-A",
+                "tasks",
+                "worker",
+                "--loglevel=info"
+            ],
+            "jinja": true
         }
     ]
 }

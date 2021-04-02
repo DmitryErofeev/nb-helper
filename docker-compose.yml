@@ -12,6 +12,7 @@ services:
       - "33050:5000"
 
   worker:
+    env_file: nb-helper.env
     build:
       context: ./webhooks/queue
       dockerfile: Dockerfile

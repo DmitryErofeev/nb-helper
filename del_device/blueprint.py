@@ -62,7 +62,7 @@ def get_site():
 
         form.sites.choices = [
             (site.slug, ':'.join([site.name])) for site in sites
-            ]
+        ]
     return render_template("del_device/step2.html", form=form)
 
 
@@ -76,7 +76,7 @@ def get_device():
 
         form.devices.choices = [
             (device, ':'.join([device.name])) for device in devices
-            ]
+        ]
     return render_template("del_device/step3.html", form=form)
 
 
@@ -123,9 +123,8 @@ def rename_device():
             link = nb.dcim.cables.get(cable_link)
             link.delete()
         flash('Линки коммутатора удалены', category='success')
-    except:
+    except Exception:
         flash('Линки коммутатора не удалены', category='danger')
-
 
     try:
         device = nb.dcim.devices.get(name=session['device'])
@@ -135,7 +134,7 @@ def rename_device():
         device.custom_fields['dateRemove'] = _date_remove
         device.save()
         flash('Коммутатор переименован', category='success')
-    except:
+    except Exception:
         flash('Коммутатор не переименован', category='danger')
 
     return render_template("del_device/step5.html", nb_url=nb_url, device=device)
