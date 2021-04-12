@@ -21,6 +21,7 @@ services:
     volumes: ['./webhooks/queue:/queue']
 
   monitor:
+    env_file: nb-helper.env
     build:
       context: ./webhooks/queue
       dockerfile: Dockerfile

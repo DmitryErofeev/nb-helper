@@ -49,6 +49,7 @@ def get_region():
         for region in nb.dcim.regions.all()
         if region.parent
     ]
+    session['now'] = str(now)
 
     return render_template("del_device/step1.html", form=form)
 

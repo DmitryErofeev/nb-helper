@@ -3,10 +3,14 @@ from flask import Blueprint, request
 # import requests
 # import redis
 import os
+import logging
 # import time
+
 
 from celery import Celery
 
+logging.basicConfig()
+logger = logging.getLogger(__file__)
 
 api_webhooks = Blueprint('api_webhooks', __name__, template_folder='templates')
 
@@ -15,6 +19,8 @@ api_webhooks = Blueprint('api_webhooks', __name__, template_folder='templates')
 
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL'),
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+NB_USER = os.environ.get('NETBOX_USER')
+
 celery = Celery('tasks', broker=CELERY_BROKER_URL, backend=CELERY_RESULT_BACKEND)
 
 
@@ -24,13 +30,15 @@ def device_update():
     response_code = '500'
     if request.method == 'POST':
         data = request.json
-        tags = data['data']['tags']
-        if any(['webhook' == tag['name'] for tag in tags]):  # ищем тэг во всех тэгах
+        # tags = data['data']['tags']
+        if data['username'] != NB_USER:
+        # if any(['webhook' == tag['name'] for tag in tags]):  # ищем тэг во всех тэгах
 
             task = celery.send_task('tasks.device_update', args=[data['request_id'], data], kwargs={})
 
-            response_code = task.id
-        else:
-            response_code = '404'
+            response_code = task.id, 201
+            logger.error(f' Код ответа в Нетбокс:{response_code}')
+        # else:
+            # response_code = '404'
 
     return response_code
