@@ -58,9 +58,7 @@ def get_region():
     form = GetREgion()
 
     form.get_region.choices = [(region.slug, ':'.join([str(region.parent), str(region.name)]))
-                                for region in nb.dcim.regions.all()
-                                if region.parent
-                                ]
+                                for region in nb.dcim.regions.all() if region.parent]
 
     return render_template('utils/step1.html', form=form)
 
@@ -103,7 +101,7 @@ def get_cable():
 @add_utils.route('del_cable_step5', methods=['POST'])
 def del_cable():
     session['cable'] = request.form.get('get_cable_link')
-    # _device = nb.dcim.devices.get(name=session['device'])
+    _device = nb.dcim.devices.get(name=session['device'])
     _cable = nb.dcim.cables.get(session['cable'])
     try:
         _cable.delete()
@@ -111,7 +109,7 @@ def del_cable():
     except:
         flash('Ошибка', category='danger')
 
-    return render_template('utils/step5.html',nb_url=nb_url, device=_device)
+    return render_template('utils/step5.html', nb_url=nb_url, device=_device)
 
 
 @add_utils.route('/utils-slug', methods=['POST', 'GET'])
@@ -135,19 +133,20 @@ def utils_mac():
 
     if request.method == 'POST':
 
-        res = get_mac_request(request.form.get ('input_mac'))
+        res = get_mac_request(request.form.get('input_mac'))
         form.output_mac.data = res
 
     return render_template('utils/utils_mac.html', form=form)
 
 @cache.memoize()
 def get_mac_request(mac: str) -> str:
-        url = f"{MAC_API_URL}{mac}"
 
-        response = requests.get(url)
-        print("get_mac_request()", mac, response.status_code)
+    url = f"{MAC_API_URL}{mac}"
 
-        if response.ok:
-            return response.text
-        else:
-            return response.reason
+    response = requests.get(url)
+    print("get_mac_request()", mac, response.status_code)
+
+    if response.ok:
+        return response.text
+    else:
+        return response.reason
